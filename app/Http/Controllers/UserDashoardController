@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+class UserDashoardController extends Controller
+{
+    public function dashboard()
+    {
+        $user = Auth::user();
+        return view('userDashboard', compact('user'));
+    }
+
+    public function updateMissingFields(Request $request)
+    {
+        $user = Auth::user();
+        $data = [];
+
+        if (!$user->name && $request->filled('name')) {
+            $data['name'] = $request->name;
+        }
+
+        if (!$user->mobile && $request->filled('mobile')) {
+            $data['mobile'] = $request->mobile;
+        }
+
+        if (!$user->dob && $request->filled('dob')) {
+            $data['dob'] = $request->dob;
+        }
+
+        if (!$user->gender && $request->filled('gender')) {
+            $data['gender'] = $request->gender;
+        }
+
+        if (!$user->profile_photo && $request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('profiles', 'public');
+            $data['profile_photo'] = $path;
+        }
+
+        if (!empty($data)) {
+            $user->update($data);
+        }
+
+        return redirect()->back()->with('success', 'Details updated successfully.');
+    }
+}

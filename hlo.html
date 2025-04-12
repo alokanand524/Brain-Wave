@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Profile Card</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .profile-card {
+      max-width: 250px;
+      margin: auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    .profile-card .profile-img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #0d6efd;
+    }
+
+    .profile-card .card-body {
+      text-align: center;
+    }
+
+    .profile-card h5 {
+      margin-top: 10px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .profile-actions a {
+      display: block;
+      padding: 8px;
+      text-decoration: none;
+      color: #0d6efd;
+      font-weight: 500;
+    }
+
+    .profile-actions a:hover {
+      background: #f1f1f1;
+    }
+
+    .profile-divider {
+      border-top: 1px solid #ddd;
+      margin: 10px 0;
+    }
+
+    .profile-options a {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .profile-options a i {
+      margin-right: 10px;
+      color: #0d6efd;
+    }
+
+    .profile-options a:hover {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+    }
+ 
+  </style>
+</head>
+
+<body class="bg-light">
+  
+
+  <div class="profile-card mt-5">
+    <div class="card-body">
+
+      <div class="d-flex img-info">
+        <img src="{{ asset('image/bg.jpg') }}" alt="Profile" class="profile-img mb-2">
+        <h5>John Doe</h5>
+      </div>
+    
+
+      <div class="profile-options">
+        <a href="#"><i class="fas fa-user"></i> View Profile</a>
+        <a href="#"><i class="fas fa-chart-line"></i> See Your Status</a>
+      </div>
+
+      <div class="profile-divider"></div>
+
+      <div class="profile-options">
+        <a href="#"><i class="fas fa-user-shield"></i> Privacy Settings</a>
+        <a href="#"><i class="fas fa-cogs"></i> Account Settings</a>
+      </div>
+
+      <div class="profile-divider"></div>
+
+      <div class="profile-options">
+        <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
