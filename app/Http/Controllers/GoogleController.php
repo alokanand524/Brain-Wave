@@ -28,6 +28,7 @@ class GoogleController extends Controller
             ], [
                 'name' => $googleUser->getName(),
                 'password' => bcrypt(Str::random(24)),
+                'profile_image' => $googleUser->getAvatar(),
             ]);
     
             Auth::login($user);

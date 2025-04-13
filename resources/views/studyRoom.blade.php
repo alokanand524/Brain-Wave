@@ -61,9 +61,18 @@
                     </span> -->
 
 
-                    <span class="dp-wrapper" id="profileImageTrigger">
+                    <!-- <span class="dp-wrapper" id="profileImageTrigger">
                         <img src="{{ asset('image/profileImage.png') }}" alt="Profile Image">
+                    </span> -->
+                    <span class="dp-wrapper" id="profileImageTrigger">
+                        @auth
+                        <img src="{{ Auth::user()->profile_image }}" alt="{{ Auth::user()->name }}" class="rounded-circle" width="50">
+                        @else
+                        <img src="{{ asset('image/profileImage.png') }}" alt="Guest" class="rounded-circle" width="50">
+                        @endauth
                     </span>
+
+
 
                     @auth
                     <div id="profileSidebar" class="profile-sidebar">
@@ -72,7 +81,15 @@
                                 <span class="close-btn" style="margin-left: 200px;" id="closeSidebar">&times;</span>
 
                                 <div class="d-flex img-info">
-                                    <img src="{{ asset('image/bg.jpg') }}" alt="Profile" class="profile-img mb-2">
+                                    <!-- <img src="{{ asset('image/bg.jpg') }}" alt="Profile" class="profile-img mb-2"> -->
+
+                                    <span class="dp-wrapper" id="profileImageTrigger">
+                                        @auth
+                                        <img src="{{ Auth::user()->profile_image }}" alt="{{ Auth::user()->name }}" class="rounded-circle" width="50">
+                                        @else
+                                        <img src="{{ asset('image/profileImage.png') }}" alt="Guest" class="rounded-circle" width="50">
+                                        @endauth
+                                    </span>
                                     <h5>
                                         @auth
                                         {{ Auth::user()->name }}
@@ -80,6 +97,7 @@
                                         You Guest
                                         @endauth
                                     </h5>
+                                    
                                 </div>
 
                                 <div class="profile-options">
@@ -155,7 +173,7 @@
                 @endauth -->
 
                 <button class="btn btn-primary btn-sm btn-rounded" data-bs-toggle="modal" data-bs-target="#confirmFinishModal">
-                    Finish session
+                    Join session
                 </button>
 
                 <div class="d-flex align-items-center icon-box-group ms-3">
@@ -203,7 +221,7 @@
                         <a href="{{ route('google.login') }}" class="btn btn-danger w-100 mt-3">
                             <i class="fab fa-google me-2"></i> Continue with Google
                         </a>
-                        
+
                         <div class="divider"><span>or</span></div>
 
 
