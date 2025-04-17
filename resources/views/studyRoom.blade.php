@@ -15,7 +15,6 @@
 
 
     <style>
-
     </style>
 </head>
 
@@ -41,7 +40,7 @@
                 </button>
                 <!-- <a href="{{ route('studyRoom') }}" class="btn btn-join ms-3">Join Now</a> -->
                 @guest
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#authModal">Login</button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#authModal" style="margin-left: 10px;">Login</button>
                 @endguest
             </div>
         </div>
@@ -55,15 +54,7 @@
             <div class="d-flex align-items-center gap-2">
                 <div class="d-flex align-items-center gap-2">
 
-                    <!-- Display Profile Picture of Users -->
-                    <!-- <span class="dp-wrapper">
-                        <img src="{{ asset('image/profileImage.png') }}" alt="Profile profileImage">
-                    </span> -->
 
-
-                    <!-- <span class="dp-wrapper" id="profileImageTrigger">
-                        <img src="{{ asset('image/profileImage.png') }}" alt="Profile Image">
-                    </span> -->
                     <span class="dp-wrapper" id="profileImageTrigger">
                         @auth
                         <img src="{{ Auth::user()->profile_image }}" alt="{{ Auth::user()->name }}" class="rounded-circle" width="50">
@@ -97,7 +88,7 @@
                                         You Guest
                                         @endauth
                                     </h5>
-                                    
+
                                 </div>
 
                                 <div class="profile-options">
@@ -151,26 +142,23 @@
             <!-- Pagination -->
             <div class="pagination-center">
                 <span class="pagination-control" onclick="changePage(-1)">&laquo;</span>
-                <span id="page-info">1 / 2</span>
+                <span id="page-info">1 / 1</span>
                 <span class="pagination-control" onclick="changePage(1)">&raquo;</span>
             </div>
 
             <!-- Right -->
             <div class="d-flex align-items-center gap-2">
                 <button class="nav-icon-btn"><i class="fas fa-bolt"></i></button>
-                <button class="nav-icon-btn"><i class="far fa-clock"></i></button>
 
-                <!-- <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#authModal">Register</button> -->
-                <!-- @guest
-                <button  data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-                @endguest -->
+                <!-- <button class="nav-icon-btn"><i class="far fa-clock"></i></button> -->
+                <button class="nav-icon-btn" style="position: relative; padding: 0; border: none; background: transparent;">
+                    <div class="clock-container" style="width: 40px; height: 40px;">
+                        <canvas id="canvas" width="35" height="35"></canvas>
+                        <div class="digital-popup" id="digitalTime">00:00:00</div>
+                    </div>
+                </button>
 
-                <!-- @auth
-                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-danger ">Logout</button>
-                </form>
-                @endauth -->
+
 
                 <button class="btn btn-primary btn-sm btn-rounded" data-bs-toggle="modal" data-bs-target="#confirmFinishModal">
                     Join session
@@ -213,7 +201,7 @@
                         <h3 id="formTitle">Welcome Back 👋</h3>
 
                         <div class="toggle-btns">
-                            <button id="loginBtn" class="active" onclick="switchForm('login')">Login</button>
+                            <button id="loginBtn" class="active" onclick="switchForm('login')">Login direct with --</button>
                             <button id="signupBtn" onclick="switchForm('register')">Register</button>
                         </div>
 
@@ -228,24 +216,40 @@
                         <div id="loginForm" style="display: block;">
                             <form method="POST" action="{{ route('login') }}">
                                 @csrf
-                                <div class="mb-1">
-                                    <label for="loginEmail" class="form-label lbl-decor1">Email</label>
-                                    <input type="email" name="email" id="loginEmail" class="form-control" required>
+
+                                <div class="mb-2">
+                                    <label for="loginEmail" class="form-label lbl-decor3">Email</label>
+                                    <input type="email" name="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
                                 </div>
-                                <div class="mb-1">
+
+                                <div class="mb-2">
                                     <label for="loginPassword" class="form-label lbl-decor">Password</label>
-                                    <input type="password" name="password" id="loginPassword" class="form-control" required>
+                                    <input type="password" name="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
                                 </div>
+
                                 <button type="submit" class="btn btn-primary w-100">Login</button>
-                                <p class="mt-1 text-center ">
-                                    Don't have an account? <a href="#" onclick="switchForm('register')">Register</a>
+
+                                <p class="mt-2 text-center">
+                                    Don't have an account?
+                                    <a href="#" onclick="switchForm('register')" style="color: orange;">Register</a>
                                 </p>
+
+                                @if (session('status'))
+                                <div class="alert alert-success mt-2">{{ session('status') }}</div>
+                                @endif
+
+                                @if ($errors->any())
+                                <div class="alert alert-danger mt-2">{{ $errors->first() }}</div>
+                                @endif
                             </form>
+
+
+
                         </div>
 
 
                         <div id="registerForm" style="display: none;">
-                            <form method="POST" action="{{ route('register') }}">
+                            <!-- <form method="POST" action="{{ route('register') }}">
                                 @csrf
                                 <div class="mb-1">
                                     <label for="registerName" class="form-label lbl-decor">Username</label>
@@ -268,13 +272,47 @@
                                 <p class="mt-1 text-center">
                                     Already have an account? <a href="#" onclick="switchForm('login')" style="color: orange;">Login</a>
                                 </p>
-                            </form>
-                        </div>
+                            </form> -->
 
-                        <!-- <div class="divider"><span>or</span></div>
-                        <a href="{{ route('google.login') }}" class="btn btn-danger w-100 mt-3">
-                            <i class="fab fa-google me-2"></i> Continue with Google
-                        </a> -->
+                            <form method="POST" action="{{ route('register') }}">
+                                @csrf
+                                <div class="mb-1">
+                                    <label for="registerName" class="form-label lbl-decor">Name</label>
+                                    <input type="text" name="name" id="registerName" class="form-control" required>
+                                </div>
+
+                                <div class="mb-1">
+                                    <label for="registerEmail" class="form-label lbl-decor3">Email</label>
+                                    <input type="email" name="email" id="registerEmail" class="form-control" required>
+                                </div>
+
+                                <div class="mb-1">
+                                    <label for="registerPassword" class="form-label lbl-decor">Password</label>
+                                    <input type="password" name="password" id="registerPassword" class="form-control" required>
+                                </div>
+
+                                <div class="mb-1">
+                                    <label for="password_confirmation" class="form-label lbl-decor2">Confirm Password</label>
+                                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100">Send Magic Link</button>
+
+                                <p class="mt-1 text-center">
+                                    Already have an account?
+                                    <a href="#" onclick="switchForm('login')" style="color: orange;">Login</a>
+                                </p>
+
+                                @if (session('status'))
+                                <div class="alert alert-success mt-2">{{ session('status') }}</div>
+                                @endif
+
+                                @if ($errors->any())
+                                <div class="alert alert-danger mt-2">{{ $errors->first() }}</div>
+                                @endif
+                            </form>
+
+                        </div>
 
                     </div>
                 </div>
@@ -282,69 +320,14 @@
         </div>
     </div>
 
-
-    <!-- Scripts -->
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- |                 J A V A     S C R I P T                           | -->
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <script>
-        let currentPage = 1;
-        const cardsPerPage = 8;
-        const totalUsers = 20;
-        document.getElementById("userCount").textContent = totalUsers;
-
-        function switchForm(type) {
-            const title = document.getElementById("formTitle");
-            const signup = document.getElementById("signupField");
-            document.getElementById("loginBtn").classList.toggle("active", type === "login");
-            document.getElementById("signupBtn").classList.toggle("active", type === "register");
-            title.innerText = type === "register" ? "Create an Account 🚀" : "Welcome Back 👋";
-            signup.style.display = type === "register" ? "block" : "none";
-        }
-
-        const statusOptions = ["Studying ⏳", "On Break ☕", "Reviewing 📚", "Focused 🔥"];
-
-        function createCard(id) {
-            const status = statusOptions[Math.floor(Math.random() * statusOptions.length)];
-            return `
-        <div class="study-card">
-          <div class="video-section">
-            <video id="video-${id}" autoplay muted playsinline></video>
-            <div class="status-badge">${status}</div>
-            <div class="notification-badge">25</div>
-            <div class="three-dot" onclick="toggleActions(this)">⋮</div>
-            <div class="hover-actions">
-              <button>Rate</button><button>Follow</button><button>Report</button>
-            </div>
-            <div class="top-hover-icons">
-              <div>🔖</div><div>💬</div><div>📒</div><div>🎖️</div>
-            </div>
-            <div class="emoji-reactions visible">
-              <div class="emoji-btn" onclick="showReaction(this, '✨')">✨</div>
-              <div class="emoji-btn" onclick="showReaction(this, '❤️')">❤️</div>
-              <div class="emoji-btn" onclick="showReaction(this, '😂')">😂</div>
-              <div class="emoji-btn" onclick="showReaction(this, '🔥')">🔥</div>
-            </div>
-            <div class="bottom-hover-info"><img src="https://i.pravatar.cc/150?img=${id}" alt="User"><span>User ${id}</span></div>
-          </div>
-          <div class="status-msg" onmouseover="toggleBottomHover(this,true)" onmouseout="toggleBottomHover(this,false)">
-            Stay focused, stay awesome! 💪
-          </div>
-        </div>`;
-        }
-
-        function loadStudyCards(page) {
-            const grid = document.getElementById('studyGrid');
-            grid.innerHTML = '';
-            const start = (page - 1) * cardsPerPage + 1;
-            const end = Math.min(start + cardsPerPage - 1, totalUsers);
-            for (let i = start; i <= end; i++) {
-                grid.innerHTML += createCard(i);
-            }
-            for (let i = start; i <= end; i++) {
-                startCamera(`video-${i}`);
-            }
-        }
-
         function changePage(dir) {
             const maxPage = Math.ceil(totalUsers / cardsPerPage);
             currentPage += dir;
@@ -366,36 +349,9 @@
                 }).catch(err => console.warn(err));
         }
 
-
-        function toggleBottomHover(el, on) {
-            const card = el.closest('.study-card');
-            const emoji = card.querySelector('.emoji-reactions');
-            const info = card.querySelector('.bottom-hover-info');
-            emoji.classList.toggle('hidden', on);
-            emoji.classList.toggle('visible', !on);
-            info.style.display = on ? 'flex' : 'none';
-        }
-
-        function showReaction(el, emojiChar) {
-            const emoji = document.createElement('div');
-            emoji.className = 'floating-emoji';
-            emoji.textContent = emojiChar;
-            const parent = el.closest('.video-section');
-            emoji.style.left = (el.offsetLeft + 5) + 'px';
-            parent.appendChild(emoji);
-            setTimeout(() => emoji.remove(), 1000);
-        }
-
         function toggleActions(dot) {
             dot.classList.toggle('active');
         }
-
-        // function toggleCamera(el) {
-        //     el.classList.toggle("fa-video-slash");
-        //     el.classList.toggle("fa-video");
-        //     el.classList.toggle("text-muted");
-        //     el.classList.toggle("text-success");
-        // }
 
         document.getElementById('theme-toggle').addEventListener('click', () => {
             const html = document.documentElement;
@@ -414,55 +370,7 @@
         });
     </script>
 
-    <script>
-        let localStream = null;
-
-        function toggleCamera(el) {
-            const videoEl = document.getElementById("video-1");
-
-            if (!localStream) {
-                navigator.mediaDevices.getUserMedia({
-                        video: true
-                    })
-                    .then(stream => {
-                        localStream = stream;
-                        videoEl.srcObject = stream;
-
-                        el.classList.remove("fa-video-slash", "text-muted");
-                        el.classList.add("fa-video", "text-success");
-                    })
-                    .catch(err => console.warn(err));
-            } else {
-                localStream.getTracks().forEach(track => track.stop());
-                videoEl.srcObject = null;
-                localStream = null;
-
-                el.classList.remove("fa-video", "text-success");
-                el.classList.add("fa-video-slash", "text-muted");
-            }
-        }
-
-
-        function loadStudyCards(page) {
-            const grid = document.getElementById('studyGrid');
-            grid.innerHTML = '';
-
-            // Add guest card first
-            grid.innerHTML += createCard(1);
-
-            const start = (page - 1) * cardsPerPage + 2;
-            const end = Math.min(start + cardsPerPage - 2, totalUsers);
-            for (let i = start; i <= end; i++) {
-                grid.innerHTML += createCard(i);
-            }
-
-            // Start camera only for non-guest users
-            for (let i = start; i <= end; i++) {
-                startCamera(`video-${i}`);
-            }
-        }
-    </script>
-
+    <!-- login and registration form toggle -->
     <script>
         function switchForm(type) {
             const loginForm = document.getElementById("loginForm");
@@ -477,6 +385,7 @@
             registerForm.style.display = type === "register" ? "block" : "none";
         }
     </script>
+
 
     <script>
         function handleLoginSuccess(user) {
@@ -502,6 +411,8 @@
         });
     </script>
 
+    <!-- side nav bar for Profile -->
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const trigger = document.getElementById('profileImageTrigger');
@@ -525,6 +436,82 @@
                 });
             }
         });
+    </script>
+
+    <!-- clock JS -->
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        let radius = canvas.height / 2;
+        ctx.translate(radius, radius);
+        radius *= 0.90;
+
+        function drawClock() {
+            ctx.clearRect(-canvas.width, -canvas.height, canvas.width * 2, canvas.height * 2);
+            drawFace(ctx, radius);
+            drawTime(ctx, radius);
+        }
+
+        function drawFace(ctx, radius) {
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = '#000000';
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.05, 0, 2 * Math.PI);
+            ctx.fillStyle = '#000';
+            ctx.fill();
+        }
+
+        function drawTime(ctx, radius) {
+            const now = new Date();
+            let hour = now.getHours();
+            let minute = now.getMinutes();
+            let second = now.getSeconds();
+
+            hour %= 12;
+            hour = (hour * Math.PI / 6) +
+                (minute * Math.PI / (6 * 60)) +
+                (second * Math.PI / (360 * 60));
+            drawHand(ctx, hour, radius * 0.45, 2.7);
+
+            minute = (minute * Math.PI / 30) + (second * Math.PI / (30 * 60));
+            drawHand(ctx, minute, radius * 0.7, 2);
+
+            second = (second * Math.PI / 30);
+            drawHand(ctx, second, radius * 0.85, 1.5);
+        }
+
+        function drawHand(ctx, pos, length, width) {
+            ctx.beginPath();
+            ctx.lineWidth = width;
+            ctx.lineCap = "round";
+            ctx.moveTo(0, 0);
+            ctx.rotate(pos);
+            ctx.lineTo(0, -length);
+            ctx.strokeStyle = "#000";
+            ctx.stroke();
+            ctx.rotate(-pos);
+        }
+
+        function updateDigitalClock() {
+            const now = new Date();
+            const digitalTime = document.getElementById("digitalTime");
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            digitalTime.innerText = `${h}:${m}:${s}`;
+        }
+
+        setInterval(() => {
+            drawClock();
+            updateDigitalClock();
+        }, 1000);
     </script>
 
 

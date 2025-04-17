@@ -6,7 +6,7 @@ use App\Http\Controllers\UserDashoardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\AuthController;
-
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +35,9 @@ use App\Http\Controllers\AuthController;
 
 // require __DIR__.'/auth.php';
 
+// Auth::routes();
+
+
 
 
 Route::get('/', [HomeController::class,'index'])->name('index');
@@ -52,8 +55,20 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [UserDashoardController::class, 'dashboard'])->name('dashboard');
-    Route::post('/update-details', [UserDashoardController::class, 'updateMissingFields'])->name('update.details');
-});
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/dashboard', [UserDashoardController::class, 'dashboard'])->name('dashboard');
+//     Route::post('/update-details', [UserDashoardController::class, 'updateMissingFields'])->name('update.details');
+// });
 
+Route::middleware('auth')->post('/live-session/join', [LiveSessionController::class, 'join'])->name('live.join');
+Route::middleware('auth')->post('/live-session/leave', [LiveSessionController::class, 'leave'])->name('live.leave');
+
+Route::get('/magic-register/verify/{token}', [AuthController::class, 'verifyMagicRegister'])->name('magic.register.verify');
+
+
+Route::get('/magic-login', function () {
+    return view('auth.magic-login');
+})->name('magic.login');
+
+// Route::post('/magic-login/send', [GoogleController::class, 'send'])->name('magic.login.send');
+// Route::get('/magic-login/verify/{token}', [GoogleController::class, 'verify'])->name('magic.login.verify');

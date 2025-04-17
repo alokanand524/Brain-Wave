@@ -27,6 +27,12 @@ class User extends Authenticatable
         'date_of_birth',
         'gender',
         'profile_image',
+        'is_email_verified',
+        'refresh_token',
+        'email_verification_token',
+        'email_verification_expiry',
+        'magic_login_token',
+        'magic_login_expires_at',
     ];
     
 
@@ -49,4 +55,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function add($request)
+    {
+        $obj = new $this;
+        $obj->name = $request->name;
+        $obj->email = $request->email;
+        $obj->password = $request->password;
+ 
+    }
 }

@@ -545,3 +545,35 @@ video {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     margin: 15px 0;
 }
+
+
+/* clock */
+
+.clock-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.digital-popup {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.95);
+    background-color: #222;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.clock-container:hover .digital-popup {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
