@@ -8,14 +8,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- CSS IMPLEMENTATION -->
     @vite(['resources/css/style.css'])
     @vite(['resources/css/live-stydy-group.css'])
 
 
-    <style>
-    </style>
+
 </head>
 
 
@@ -59,7 +59,7 @@
                         @auth
                         <img src="{{ Auth::user()->profile_image }}" alt="{{ Auth::user()->name }}" class="rounded-circle" width="50">
                         @else
-                        <img src="{{ asset('image/profileImage.png') }}" alt="Guest" class="rounded-circle" width="50">
+                        <img src="{{ asset('image/profileImage.png') }}" alt="Guest" class="rounded-circle" width="50" data-bs-toggle="modal" data-bs-target="#authModal">
                         @endauth
                     </span>
 
@@ -67,11 +67,12 @@
 
                     @auth
                     <div id="profileSidebar" class="profile-sidebar">
-                        <div class="profile-card mt-5">
+                        <div class="profile-card">
                             <div class="card-body">
-                                <span class="close-btn" style="margin-left: 200px;" id="closeSidebar">&times;</span>
+                                <span class="close-btn" style="margin-left: 200px; margin-top: -14px;" id="closeSidebar">&times;</span>
 
-                                <div class="d-flex img-info">
+                                <div class="d-flex img-info" style="margin-bottom: .5rem;">
+
                                     <!-- <img src="{{ asset('image/bg.jpg') }}" alt="Profile" class="profile-img mb-2"> -->
 
                                     <span class="dp-wrapper" id="profileImageTrigger">
@@ -92,7 +93,7 @@
                                 </div>
 
                                 <div class="profile-options">
-                                    <a href="#"><i class="fas fa-user"></i> View Profile</a>
+                                    <a href="{{ route(('profile.view')) }}"><i class="fas fa-user"></i> View Profile</a>
                                     <a href="#"><i class="fas fa-chart-line"></i> See Your Status</a>
                                 </div>
 
@@ -159,10 +160,43 @@
                 </button>
 
 
+                <!-- <button class="btn btn-primary btn-sm btn-rounded">Join Live Room</button>
+                <button class="btn btn-primary btn-sm btn-rounded" data-bs-toggle="modal" data-bs-target="#confirmFinishModal">End Live</button> -->
 
-                <button class="btn btn-primary btn-sm btn-rounded" data-bs-toggle="modal" data-bs-target="#confirmFinishModal">
-                    Join session
-                </button>
+                @if(Auth::check())
+                <button id="joinLiveBtn" class="btn btn-primary">Join Live Room</button>
+                @else
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#authModal">Login to Join Live</button>
+                @endif
+
+                <button id="confirmEndBtn" type="button" class="btn btn-danger" data-bs-dismiss="modal">End Now</button>
+
+
+
+                <!-- <div id="videoContainer" class="mt-3"></div> -->
+
+                <!-- Confirm End Modal -->
+                <div class="modal fade" id="confirmFinishModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content text-start">
+                            <div class="modal-header">
+                                <h5 class="modal-title">End Live Session?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to end your live session?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button id="confirmEndBtn" type="button" class="btn btn-danger" data-bs-dismiss="modal">End Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
 
                 <div class="d-flex align-items-center icon-box-group ms-3">
                     <i class="fas fa-users"></i><span class="ms-1" id="userCount">lbl-decor0</span>
@@ -175,20 +209,20 @@
     <div class="study-grid container" id="studyGrid"></div>
 
     <!-- Finish Modal -->
-    <div class="modal fade" id="confirmFinishModal" tabindex="-1">
+    <!-- <div class="modal fade" id="confirmFinishModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-primary text-white">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title">Finish Session?</h5>
+                    <h5 class="modal-title">End Live?</h5>
                 </div>
-                <div class="modal-body">Are you sure you want to finish the session?</div>
+                <div class="modal-body">Are you sure you want to stop your live?</div>
                 <div class="modal-footer border-0">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <a href="/" class="btn btn-danger">Close</a>
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
 
     <!-- Auth Modal -->
@@ -201,7 +235,7 @@
                         <h3 id="formTitle">Welcome Back 👋</h3>
 
                         <div class="toggle-btns">
-                            <button id="loginBtn" class="active" onclick="switchForm('login')">Login direct with --</button>
+                            <button id="loginBtn" class="active" onclick="switchForm('login')">Login</button>
                             <button id="signupBtn" onclick="switchForm('register')">Register</button>
                         </div>
 
@@ -242,38 +276,10 @@
                                 <div class="alert alert-danger mt-2">{{ $errors->first() }}</div>
                                 @endif
                             </form>
-
-
-
                         </div>
 
-
+                        <!-- Registration Form -->
                         <div id="registerForm" style="display: none;">
-                            <!-- <form method="POST" action="{{ route('register') }}">
-                                @csrf
-                                <div class="mb-1">
-                                    <label for="registerName" class="form-label lbl-decor">Username</label>
-                                    <input type="text" name="name" id="registerName" class="form-control" required>
-                                </div>
-                                <div class="mb-1">
-                                    <label for="registerEmail" class="form-label lbl-decor3">Email</label>
-                                    <input type="email" name="email" id="registerEmail" class="form-control" required>
-                                </div>
-                                <div class="mb-1">
-                                    <label for="registerPassword" class="form-label lbl-decor">Password</label>
-                                    <input type="password" name="password" id="registerPassword" class="form-control" required>
-                                </div>
-                                <div class="mb-1">
-                                    <label for="password_confirmation" class="form-label lbl-decor2">Confirm Password</label>
-                                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
-                                </div>
-
-                                <button type="submit" class="btn btn-success w-100">Register</button>
-                                <p class="mt-1 text-center">
-                                    Already have an account? <a href="#" onclick="switchForm('login')" style="color: orange;">Login</a>
-                                </p>
-                            </form> -->
-
                             <form method="POST" action="{{ route('register') }}">
                                 @csrf
                                 <div class="mb-1">
@@ -296,7 +302,7 @@
                                     <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
                                 </div>
 
-                                <button type="submit" class="btn btn-success w-100">Send Magic Link</button>
+                                <button type="submit" class="btn btn-success w-100">Register</button>
 
                                 <p class="mt-1 text-center">
                                     Already have an account?
@@ -320,10 +326,12 @@
         </div>
     </div>
 
+    <div id="videoContainer" class="container" style="width: 30%; margin-left:100px; margin-top:-10;"></div>
+
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |                 J A V A     S C R I P T                           | -->
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-   
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
@@ -513,6 +521,121 @@
             updateDigitalClock();
         }, 1000);
     </script>
+
+    <!-- <script>
+    function showAlert() {
+        alert("Check email to Verify Account for Registration");
+        return true;
+    }
+</script> -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const registerForm = document.querySelector('#registerForm form');
+
+            registerForm.addEventListener('submit', function(e) {
+                if (registerForm.checkValidity()) {
+                    alert("Check email to Verify Account by Clicking Link");
+                }
+            });
+        });
+    </script>
+
+
+    <!-- <script>
+        const joinBtn = document.getElementById('joinLiveBtn');
+        const endBtn = document.getElementById('endLiveBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        let stream;
+
+        async function markLiveStatus(status) {
+            const endpoint = status === 'start' ? '/live-session/start' : '/live-session/end';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Server response:', result);
+            } catch (err) {
+                console.error('Error updating live status:', err);
+            }
+        }
+
+        joinBtn?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log("Join button clicked");
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                });
+
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.muted = true;
+                video.classList.add('rounded', 'shadow', 'border');
+                video.style.width = "60%";
+
+                videoContainer.innerHTML = '';
+                videoContainer.appendChild(video);
+
+                joinBtn.classList.add('d-none');
+                endBtn.classList.remove('d-none');
+
+                await markLiveStatus('start');
+            } catch (error) {
+                alert("Camera permission required to go live.");
+                console.error(error);
+            }
+        });
+
+        document.getElementById('confirmEndBtn')?.addEventListener('click', async () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                videoContainer.innerHTML = '';
+            }
+
+            joinBtn.classList.remove('d-none');
+            endBtn.classList.add('d-none');
+
+            await markLiveStatus('end');
+        });
+    </script> -->
+
+
+    <script>
+
+async function startLiveSession() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.autoplay = true;
+        video.muted = true; // Mute the user's own video
+        video.classList.add('rounded', 'shadow', 'border');
+        document.getElementById('videoContainer').appendChild(video);
+        
+        // Store the stream for later use
+        window.localStream = stream;
+
+        // Send the stream to the backend to broadcast to others
+        await joinRoom();
+    } catch (err) {
+        console.error('Error accessing camera/microphone: ', err);
+        alert("Please grant access to your camera and microphone.");
+    }
+}
+</script>
+
 
 
 </body>

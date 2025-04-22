@@ -22,4 +22,8 @@ class HomeController extends Controller
     {
         return view('studyRoom');
     }
+    public function viewProfile()
+    {
+        return view('viewProfile');
+    }
 }

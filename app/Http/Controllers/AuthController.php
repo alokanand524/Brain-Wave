@@ -53,8 +53,6 @@ class AuthController extends Controller
             'password' => 'required|min:2|confirmed',
         ]);
 
-
-
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
@@ -62,9 +60,6 @@ class AuthController extends Controller
                 'errors' => $validator->errors()
             ], 400);
         }
-
-
-
 
         // Store data in cache
         $token = Str::random(64);
@@ -92,11 +87,7 @@ class AuthController extends Controller
                 ->subject('Complete Your BrainWave Registration');
         });
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Magic registration link sent to your email 🎯. Please verify to complete registration.',
-
-        ]);
+        return redirect('/studyRoom');
     }
 
     public function verifyMagicRegister($token)
@@ -107,7 +98,7 @@ class AuthController extends Controller
             return redirect('/')->with('error', 'Invalid or expired registration link.');
         }
 
-        
+
         $user = User::where('magic_login_token', $token)->first();
 
         // dd($user);
@@ -115,7 +106,7 @@ class AuthController extends Controller
             return redirect('/')->with('error', 'User not found or token invalid.');
         }
 
-        
+
         $user->is_email_verified = 1;
         $user->email_verified_at = now();
         $user->magic_login_token = null;
@@ -126,7 +117,8 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect('/studyRoom')->with('status', 'Registration successful! You are now logged in 🎉');
+        // return redirect('/studyRoom')->with('status', 'Registration successful! You are now logged in 🎉');
+        return redirect()->route('studyRoom');
     }
 
 
@@ -181,6 +173,29 @@ class AuthController extends Controller
     //     ]);
     // }
 
+
+    // app/Http/Controllers/ProfileController.php
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+        $user->update($request->only('name', 'mobile', 'date_of_birth', 'gender'));
+
+        return back()->with('success', 'Profile updated successfully!');
+    }
+
+    public function updateImage(Request $request)
+    {
+        if ($request->hasFile('profile_image')) {
+            $filename = time() . '.' . $request->profile_image->extension();
+            $request->profile_image->move(public_path('uploads'), $filename);
+
+            $user = Auth::user();
+            $user->profile_image = '/uploads/' . $filename;
+            $user->save();
+        }
+
+        return back()->with('success', 'Profile image updated!');
+    }
 
 
 

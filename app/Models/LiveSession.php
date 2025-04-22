@@ -7,7 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class LiveSession extends Model
 {
-    protected $fillable = ['user_id', 'is_live', 'joined_at', 'left_at'];
+    protected $fillable = [
+        'user_id',
+        'is_live',
+        'joined_at',
+        'left_at',
+    ];
+
+    protected $dates = [
+        'joined_at',
+        'left_at',
+    ];
 
     public function user()
     {

@@ -6,6 +6,7 @@ use App\Http\Controllers\UserDashoardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LiveSessionController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -55,13 +56,6 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
-// Route::middleware(['auth'])->group(function () {
-//     Route::get('/dashboard', [UserDashoardController::class, 'dashboard'])->name('dashboard');
-//     Route::post('/update-details', [UserDashoardController::class, 'updateMissingFields'])->name('update.details');
-// });
-
-Route::middleware('auth')->post('/live-session/join', [LiveSessionController::class, 'join'])->name('live.join');
-Route::middleware('auth')->post('/live-session/leave', [LiveSessionController::class, 'leave'])->name('live.leave');
 
 Route::get('/magic-register/verify/{token}', [AuthController::class, 'verifyMagicRegister'])->name('magic.register.verify');
 
@@ -70,5 +64,18 @@ Route::get('/magic-login', function () {
     return view('auth.magic-login');
 })->name('magic.login');
 
-// Route::post('/magic-login/send', [GoogleController::class, 'send'])->name('magic.login.send');
-// Route::get('/magic-login/verify/{token}', [GoogleController::class, 'verify'])->name('magic.login.verify');
+Route::middleware(['auth'])->group(function () {
+    // View Profile Page
+    Route::get('/profile', [HomeController::class, 'viewProfile'])->name('profile.view');
+
+});
+
+// routes/web.php
+Route::put('/profile/update', [AuthController::class, 'update'])->name('profile.update');
+Route::put('/profile/update-image', [AuthController::class, 'updateImage'])->name('profile.update.image');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/live-session/start', [LiveSessionController::class, 'start'])->name('live.session.start');
+    Route::post('/live-session/end', [LiveSessionController::class, 'end'])->name('live.session.end');
+});
