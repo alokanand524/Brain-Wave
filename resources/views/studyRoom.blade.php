@@ -881,39 +881,40 @@
 
 
     <script>
-        
- 
-let localStream = null;
+        let localStream = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-    const joinBtn = document.getElementById("joinLiveBtn");
-    const closeBtn = document.getElementById("closeVideoCard");
-    const video = document.getElementById("myVideo");
-    const card = document.getElementById("floatingVideoCard");
+        document.addEventListener("DOMContentLoaded", () => {
+            const joinBtn = document.getElementById("joinLiveBtn");
+            const closeBtn = document.getElementById("closeVideoCard");
+            const video = document.getElementById("myVideo");
+            const card = document.getElementById("floatingVideoCard");
 
-    joinBtn.addEventListener("click", async () => {
-        console.log("Join button clicked");
+            joinBtn.addEventListener("click", async () => {
+                console.log("Join button clicked");
 
-        try {
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            video.srcObject = localStream;
-            await video.play();
-            card.style.display = "block";
-            console.log("Camera started and video playing");
-        } catch (err) {
-            console.error("Camera error:", err);
-            alert("Camera not accessible: " + err.message);
-        }
-    });
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: false
+                    });
+                    video.srcObject = localStream;
+                    await video.play();
+                    card.style.display = "block";
+                    console.log("Camera started and video playing");
+                } catch (err) {
+                    console.error("Camera error:", err);
+                    alert("Camera not accessible: " + err.message);
+                }
+            });
 
-    closeBtn.addEventListener("click", () => {
-        if (localStream) {
-            localStream.getTracks().forEach(track => track.stop());
-        }
-        card.style.display = "none";
-        console.log("Video stopped and card hidden");
-    });
-});
+            closeBtn.addEventListener("click", () => {
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                }
+                card.style.display = "none";
+                console.log("Video stopped and card hidden");
+            });
+        });
 
 
         function showFloatingCard(stream) {
