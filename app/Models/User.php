@@ -64,4 +64,10 @@ class User extends Authenticatable
         $obj->password = $request->password;
  
     }
+
+    public function liveSession()
+    {
+        return $this->hasOne(LiveSession::class);
+    }
+
 }

@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Events\ReceiveAnswer;
+use Illuminate\Http\Request;
+use App\Events\ReceiveWebRTCOffer;
+
+class WebRTCController extends Controller
+{
+    public function sendOffer(Request $request)
+    {
+        broadcast(new ReceiveWebRTCOffer(
+            $request->to,
+            $request->from,
+            $request->offer
+        ))->toOthers();
+
+        return response()->json(['status' => 'sent']);
+    }
+
+    public function sendAnswer(Request $request)
+    {
+        broadcast(new ReceiveAnswer(
+            $request->to,
+            $request->from,
+            $request->answer
+        ))->toOthers();
+
+        return response()->json(['status' => 'sent']);
+    }
+}

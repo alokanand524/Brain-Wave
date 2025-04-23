@@ -4,36 +4,35 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\LiveSession;
-use Illuminate\Support\Facades\Auth;
 
 class LiveSessionController extends Controller
 {
-    public function start()
+    public function start(Request $request)
     {
-        $user = Auth::user();
+        $user = auth()->user();
 
+        // Mark the user as live in DB
         $session = LiveSession::updateOrCreate(
             ['user_id' => $user->id],
             [
                 'is_live' => true,
                 'joined_at' => now(),
-                'left_at' => null, // clear previous end if any
+                'left_at' => null,
             ]
         );
 
-        return response()->json(['status' => 'live_started', 'session_id' => $session->id]);
+        return response()->json(['status' => 'started']);
     }
-    public function end()
+
+    public function stop()
     {
-        $user = Auth::user();
+        $user = auth()->user();
 
-        $session = LiveSession::where('user_id', $user->id)->first();
-        if ($session) {
-            $session->is_live = false;
-            $session->left_at = now();
-            $session->save();
-        }
+        LiveSession::where('user_id', $user->id)->update([
+            'is_live' => false,
+            'left_at' => now(),
+        ]);
 
-        return response()->json(['status' => 'live_ended']);
+        return response()->json(['message' => 'Live stopped']);
     }
 }

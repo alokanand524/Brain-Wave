@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserDashoardController;
+use App\Http\Controllers\WebRTCController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\AuthController;
@@ -79,3 +80,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/live-session/start', [LiveSessionController::class, 'start'])->name('live.session.start');
     Route::post('/live-session/end', [LiveSessionController::class, 'end'])->name('live.session.end');
 });
+
+
+// Route::post(uri: '/webrtc/offer', [WebRTCController::class, 'offer']);
+// Route::post('/webrtc/answer', [WebRTCController::class, 'answer']);
+// Route::post('/live/start', [LiveSessionController::class, 'start']);
+
+Route::post('/webrtc/offer', [WebRTCController::class, 'sendOffer']);
+Route::post('/webrtc/answer', [WebRTCController::class, 'sendAnswer']);
+Route::post('/live/start', [LiveSessionController::class, 'start']);
+Route::post('/live/stop', [LiveSessionController::class, 'stop']);
