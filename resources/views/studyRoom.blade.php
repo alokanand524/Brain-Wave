@@ -14,6 +14,9 @@
     @vite(['resources/css/style.css'])
     @vite(['resources/css/live-stydy-group.css'])
 
+    <!-- <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/live-stydy-group.css') }}"> -->
+
 
     <style>
         #liveCard {
