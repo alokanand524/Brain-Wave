@@ -11,11 +11,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- CSS IMPLEMENTATION -->
-    @vite(['resources/css/style.css'])
-    @vite(['resources/css/live-stydy-group.css'])
+    <!-- @vite(['resources/css/style.css'])
+    @vite(['resources/css/live-stydy-group.css']) -->
 
-    <!-- <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-<link rel="stylesheet" href="{{ asset('css/live-stydy-group.css') }}"> -->
+    <link rel="stylesheet" href="{{ url('CSS/style.css') }}">
+    <link rel="stylesheet" href="{{ url('CSS/live-stydy-group.css') }}">
 
 
     <style>

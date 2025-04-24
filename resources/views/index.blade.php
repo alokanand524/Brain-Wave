@@ -11,7 +11,8 @@
 
 
     <!-- CSS IMPLEMENTATION -->
-    @vite(['resources/css/style.css'])
+    <!-- @vite(['resources/css/style.css']) -->
+     <link rel="stylesheet" href="{{ url('CSS/style.css') }}">
 
     <style>
     body {
