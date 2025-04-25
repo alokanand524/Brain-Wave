@@ -156,8 +156,8 @@
                                     <div class="profile-divider"></div>
 
                                     <!-- <div class="profile-options">
-                                                    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                                                </div> -->
+                                                                            <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                                                                        </div> -->
 
                                     @auth
                                         <form action="{{ route('logout') }}" method="POST" style="display:inline;">
@@ -908,6 +908,136 @@
             .leaving(user => {
                 document.getElementById("userCount").textContent--;
             });
+
+
+    </script>
+
+    <script>
+        const peers = {};
+        let localStream = null;
+        const peerConfig = {
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+        };
+
+
+        async function joinLiveRoom(userId) {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+
+            const video = document.createElement('video');
+            video.srcObject = localStream;
+            video.autoplay = true;
+            video.muted = true;
+            video.classList.add('rounded');
+            video.id = `video-${userId}`;
+            document.getElementById('videoContainer').appendChild(video);
+
+            window.Echo.join('live-room')
+                .here(async (users) => {
+                    for (const user of users) {
+                        if (user.id !== userId) {
+                            await createOffer(user.id);
+                        }
+                    }
+                })
+                .joining(async (user) => {
+                    await createOffer(user.id);
+                })
+                .leaving((user) => {
+                    removePeer(user.id);
+                });
+
+            // Listeners
+            window.Echo.private(`live-signal.${userId}`)
+                .listen('SignalEvent', async (e) => {
+                    const { from, type, sdp, candidate } = e;
+
+                    if (type === 'offer') {
+                        await createAnswer(from, sdp);
+                    } else if (type === 'answer') {
+                        await peers[from]?.setRemoteDescription(new RTCSessionDescription(sdp));
+                    } else if (type === 'candidate') {
+                        if (candidate) {
+                            await peers[from]?.addIceCandidate(new RTCIceCandidate(candidate));
+                        }
+                    }
+                });
+        }
+
+
+
+        async function createOffer(peerId) {
+            const pc = new RTCPeerConnection(peerConfig);
+            peers[peerId] = pc;
+
+            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+            pc.onicecandidate = e => {
+                if (e.candidate) {
+                    sendSignal(peerId, 'candidate', null, e.candidate);
+                }
+            };
+
+            pc.ontrack = e => {
+                const remoteVideo = document.createElement('video');
+                remoteVideo.srcObject = e.streams[0];
+                remoteVideo.autoplay = true;
+                remoteVideo.id = `video-${peerId}`;
+                document.getElementById('videoContainer').appendChild(remoteVideo);
+            };
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+
+            sendSignal(peerId, 'offer', offer);
+        }
+
+
+
+        async function createAnswer(peerId, sdp) {
+            const pc = new RTCPeerConnection(peerConfig);
+            peers[peerId] = pc;
+
+            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+            pc.onicecandidate = e => {
+                if (e.candidate) {
+                    sendSignal(peerId, 'candidate', null, e.candidate);
+                }
+            };
+
+            pc.ontrack = e => {
+                const remoteVideo = document.createElement('video');
+                remoteVideo.srcObject = e.streams[0];
+                remoteVideo.autoplay = true;
+                remoteVideo.id = `video-${peerId}`;
+                document.getElementById('videoContainer').appendChild(remoteVideo);
+            };
+
+            await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+
+            sendSignal(peerId, 'answer', answer);
+        }
+
+
+        function sendSignal(to, type, sdp = null, candidate = null) {
+            axios.post('/signal', {
+                to,
+                type,
+                sdp,
+                candidate
+            });
+        }
+
+        function removePeer(id) {
+            if (peers[id]) {
+                peers[id].close();
+                delete peers[id];
+            }
+            const video = document.getElementById(`video-${id}`);
+            if (video) video.remove();
+        }
 
 
     </script>

@@ -84,4 +84,6 @@ Route::put('/profile/update-image', [AuthController::class, 'updateImage'])->nam
 // Route::post('/live/stop', [LiveSessionController::class, 'stop']);
 
 // Laravel routes
-Route::post('/webrtc/signal', [WebRTCController::class, 'signal'])->middleware('auth');
+// Route::post('/webrtc/signal', [WebRTCController::class, 'signal'])->middleware('auth');
+
+Route::post('/signal', [WebRTCController::class, 'signal']);
