@@ -382,7 +382,7 @@
             </div>
         </div>
     </div>
-
+<!-- 
     <div class="container">
         <div class="d-flex">
             <div class="w-2" style="width: 250px; height: 200px; background-color: red; margin-right:10px">otheres live</div>
@@ -390,7 +390,7 @@
             <div class="w-2" style="width: 250px; height: 200px; background-color: red; margin-right:10px">otheres live</div>
             <div class="w-2" style="width: 250px; height: 200px; background-color: red; margin-right:10px">otheres live</div>
         </div>
-    </div>
+    </div> -->
 
     <!-- card which show users live video -->
     <div id="liveCard" style="display: none;">
