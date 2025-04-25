@@ -82,14 +82,16 @@
                 </button>
                 <!-- <a href="{{ route('studyRoom') }}" class="btn btn-join ms-3">Join Now</a> -->
                 @guest
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#authModal" style="margin-left: 10px;">Login</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#authModal"
+                        style="margin-left: 10px;">Login</button>
                 @endguest
             </div>
         </div>
     </nav>
 
     <!-- Second Nav Bar-->
-    <nav class="navbar navbar-expand-lg container navbar-light navbar-custom px-3 py-2 position-relative mt-6 pt-3" id="sec-nav">
+    <nav class="navbar navbar-expand-lg container navbar-light navbar-custom px-3 py-2 position-relative mt-6 pt-3"
+        id="sec-nav">
         <div class="container-fluid d-flex justify-content-between align-items-center">
 
             <!-- Left -->
@@ -99,86 +101,93 @@
 
                     <span class="dp-wrapper" id="profileImageTrigger">
                         @auth
-                        <img src="{{ Auth::user()->profile_image }}" alt="{{ Auth::user()->name }}" class="rounded-circle" width="50">
+                            <img src="{{ Auth::user()->profile_image }}" alt="{{ Auth::user()->name }}"
+                                class="rounded-circle" width="50">
                         @else
-                        <img src="{{ asset('image/profileImage.png') }}" alt="Guest" class="rounded-circle" width="50" data-bs-toggle="modal" data-bs-target="#authModal">
+                            <img src="{{ asset('image/profileImage.png') }}" alt="Guest" class="rounded-circle" width="50"
+                                data-bs-toggle="modal" data-bs-target="#authModal">
                         @endauth
                     </span>
 
 
 
                     @auth
-                    <div id="profileSidebar" class="profile-sidebar">
-                        <div class="profile-card">
-                            <div class="card-body">
-                                <span class="close-btn" style="margin-left: 200px; margin-top: -14px;" id="closeSidebar">&times;</span>
+                        <div id="profileSidebar" class="profile-sidebar">
+                            <div class="profile-card">
+                                <div class="card-body">
+                                    <span class="close-btn" style="margin-left: 200px; margin-top: -14px;"
+                                        id="closeSidebar">&times;</span>
 
-                                <div class="d-flex img-info" style="margin-bottom: .5rem;">
+                                    <div class="d-flex img-info" style="margin-bottom: .5rem;">
 
-                                    <!-- <img src="{{ asset('image/bg.jpg') }}" alt="Profile" class="profile-img mb-2"> -->
+                                        <!-- <img src="{{ asset('image/bg.jpg') }}" alt="Profile" class="profile-img mb-2"> -->
 
-                                    <span class="dp-wrapper" id="profileImageTrigger">
-                                        @auth
-                                        <img src="{{ Auth::user()->profile_image }}" alt="{{ Auth::user()->name }}" class="rounded-circle" width="50">
-                                        @else
-                                        <img src="{{ asset('image/profileImage.png') }}" alt="Guest" class="rounded-circle" width="50">
-                                        @endauth
-                                    </span>
-                                    <h5>
-                                        @auth
-                                        {{ Auth::user()->name }}
-                                        @else
-                                        You Guest
-                                        @endauth
-                                    </h5>
+                                        <span class="dp-wrapper" id="profileImageTrigger">
+                                            @auth
+                                                <img src="{{ Auth::user()->profile_image }}" alt="{{ Auth::user()->name }}"
+                                                    class="rounded-circle" width="50">
+                                            @else
+                                                <img src="{{ asset('image/profileImage.png') }}" alt="Guest"
+                                                    class="rounded-circle" width="50">
+                                            @endauth
+                                        </span>
+                                        <h5>
+                                            @auth
+                                                {{ Auth::user()->name }}
+                                            @else
+                                                You Guest
+                                            @endauth
+                                        </h5>
 
-                                </div>
-
-                                <div class="profile-options">
-                                    <a href="{{ route(('profile.view')) }}"><i class="fas fa-user"></i> View Profile</a>
-                                    <a href="#"><i class="fas fa-chart-line"></i> See Your Status</a>
-                                </div>
-
-                                <div class="profile-divider"></div>
-
-                                <div class="profile-options">
-                                    <a href="#"><i class="fas fa-user-shield"></i> Privacy Settings</a>
-                                    <a href="#"><i class="fas fa-cogs"></i> Account Settings</a>
-                                </div>
-
-                                <div class="profile-divider"></div>
-
-                                <!-- <div class="profile-options">
-                                    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                                </div> -->
-
-                                @auth
-                                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    <div class="profile-options">
-                                        <!-- <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a> -->
-                                        <button type="submit" class="btn btn-danger "><i class="fas fa-sign-out-alt"></i> Logout</button>
                                     </div>
 
-                                </form>
-                                @endauth
+                                    <div class="profile-options">
+                                        <a href="{{ route(('profile.view')) }}"><i class="fas fa-user"></i> View Profile</a>
+                                        <a href="#"><i class="fas fa-chart-line"></i> See Your Status</a>
+                                    </div>
 
+                                    <div class="profile-divider"></div>
+
+                                    <div class="profile-options">
+                                        <a href="#"><i class="fas fa-user-shield"></i> Privacy Settings</a>
+                                        <a href="#"><i class="fas fa-cogs"></i> Account Settings</a>
+                                    </div>
+
+                                    <div class="profile-divider"></div>
+
+                                    <!-- <div class="profile-options">
+                                                    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                                                </div> -->
+
+                                    @auth
+                                        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <div class="profile-options">
+                                                <!-- <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a> -->
+                                                <button type="submit" class="btn btn-danger "><i
+                                                        class="fas fa-sign-out-alt"></i> Logout</button>
+                                            </div>
+
+                                        </form>
+                                    @endauth
+
+                                </div>
                             </div>
                         </div>
-                    </div>
                     @endauth
 
                     <!-- Fetch User Name after Login -->
                     <span id="user-name-display" class="text-white bg-primary fw-bold px-3 py-1 rounded me-3">
                         @auth
-                        {{ Auth::user()->name }}
+                            {{ Auth::user()->name }}
                         @else
-                        You Guest
+                            You Guest
                         @endauth
                     </span>
 
                     <!-- Cemera which toggle ON/OFF for Live Study -->
-                    <i id="video-icon" class="fas fa-video-slash text-muted" onclick="toggleCamera(this)" style="cursor:pointer"></i>
+                    <i id="video-icon" class="fas fa-video-slash text-muted" onclick="toggleCamera(this)"
+                        style="cursor:pointer"></i>
                 </div>
             </div>
 
@@ -194,7 +203,8 @@
                 <button class="nav-icon-btn"><i class="fas fa-bolt"></i></button>
 
                 <!-- <button class="nav-icon-btn"><i class="far fa-clock"></i></button> -->
-                <button class="nav-icon-btn" style="position: relative; padding: 0; border: none; background: transparent;">
+                <button class="nav-icon-btn"
+                    style="position: relative; padding: 0; border: none; background: transparent;">
                     <div class="clock-container" style="width: 40px; height: 40px;">
                         <canvas id="canvas" width="35" height="35"></canvas>
                         <div class="digital-popup" id="digitalTime">00:00:00</div>
@@ -206,12 +216,36 @@
                 <button class="btn btn-primary btn-sm btn-rounded" data-bs-toggle="modal" data-bs-target="#confirmFinishModal">End Live</button> -->
 
                 @if(Auth::check())
-                <button id="joinLiveBtn" class="btn btn-primary">Join Live Room</button>
+                    <button id="joinLiveBtn" class="btn btn-primary">Join Live Room</button>
                 @else
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#authModal">Login to Join Live</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#authModal">Login to Join
+                        Live</button>
                 @endif
 
-                <button id="confirmEndBtn" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmFinishModal">End Now</button>
+                <button id="confirmEndBtn" type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#finishConfirmModal">End Now</button>
+
+
+                <!-- Confirmation Modal -->
+                <div class="modal fade" id="finishConfirmModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white">
+                            <div class="modal-header">
+                                <h5 class="modal-title">End Live Session?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to end the session and go offline?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button id="confirmEndBtn" class="btn btn-danger">End Session</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
 
                 <!-- Confirm End Modal -->
                 <!-- <div class="modal fade" id="confirmFinishModal" tabindex="-1" aria-hidden="true">
@@ -271,12 +305,14 @@
 
                                 <div class="mb-2">
                                     <label for="loginEmail" class="form-label lbl-decor3">Email</label>
-                                    <input type="email" name="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
+                                    <input type="email" name="email" id="loginEmail" class="form-control"
+                                        placeholder="Enter your email" required>
                                 </div>
 
                                 <div class="mb-2">
                                     <label for="loginPassword" class="form-label lbl-decor">Password</label>
-                                    <input type="password" name="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                                    <input type="password" name="password" id="loginPassword" class="form-control"
+                                        placeholder="Enter your password" required>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary w-100">Login</button>
@@ -287,11 +323,11 @@
                                 </p>
 
                                 @if (session('status'))
-                                <div class="alert alert-success mt-2">{{ session('status') }}</div>
+                                    <div class="alert alert-success mt-2">{{ session('status') }}</div>
                                 @endif
 
                                 @if ($errors->any())
-                                <div class="alert alert-danger mt-2">{{ $errors->first() }}</div>
+                                    <div class="alert alert-danger mt-2">{{ $errors->first() }}</div>
                                 @endif
                             </form>
                         </div>
@@ -312,12 +348,15 @@
 
                                 <div class="mb-1">
                                     <label for="registerPassword" class="form-label lbl-decor">Password</label>
-                                    <input type="password" name="password" id="registerPassword" class="form-control" required>
+                                    <input type="password" name="password" id="registerPassword" class="form-control"
+                                        required>
                                 </div>
 
                                 <div class="mb-1">
-                                    <label for="password_confirmation" class="form-label lbl-decor2">Confirm Password</label>
-                                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
+                                    <label for="password_confirmation" class="form-label lbl-decor2">Confirm
+                                        Password</label>
+                                    <input type="password" name="password_confirmation" id="password_confirmation"
+                                        class="form-control" required>
                                 </div>
 
                                 <button type="submit" class="btn btn-success w-100">Register</button>
@@ -328,11 +367,11 @@
                                 </p>
 
                                 @if (session('status'))
-                                <div class="alert alert-success mt-2">{{ session('status') }}</div>
+                                    <div class="alert alert-success mt-2">{{ session('status') }}</div>
                                 @endif
 
                                 @if ($errors->any())
-                                <div class="alert alert-danger mt-2">{{ $errors->first() }}</div>
+                                    <div class="alert alert-danger mt-2">{{ $errors->first() }}</div>
                                 @endif
                             </form>
 
@@ -391,8 +430,8 @@
             if (id === 'video-1') return;
 
             navigator.mediaDevices.getUserMedia({
-                    video: true
-                })
+                video: true
+            })
                 .then(stream => {
                     document.getElementById(id).srcObject = stream;
                 }).catch(err => console.warn(err));
@@ -450,7 +489,7 @@
             url: '/login',
             method: 'POST',
             data: formData,
-            success: function(response) {
+            success: function (response) {
                 if (response.status === 'success') {
                     handleLoginSuccess(response.user);
                     $('#loginModal').modal('hide');
@@ -464,22 +503,22 @@
     <!-- side nav bar for Profile -->
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const trigger = document.getElementById('profileImageTrigger');
             const sidebar = document.getElementById('profileSidebar');
             const closeBtn = document.getElementById('closeSidebar');
 
             if (trigger && sidebar && closeBtn) {
-                trigger.addEventListener('click', function(e) {
+                trigger.addEventListener('click', function (e) {
                     sidebar.classList.add('active');
                 });
 
-                closeBtn.addEventListener('click', function() {
+                closeBtn.addEventListener('click', function () {
                     sidebar.classList.remove('active');
                 });
 
                 // Click outside sidebar to close
-                document.addEventListener('click', function(e) {
+                document.addEventListener('click', function (e) {
                     if (!sidebar.contains(e.target) && !trigger.contains(e.target)) {
                         sidebar.classList.remove('active');
                     }
@@ -565,10 +604,10 @@
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const registerForm = document.querySelector('#registerForm form');
 
-            registerForm.addEventListener('submit', function(e) {
+            registerForm.addEventListener('submit', function (e) {
                 if (registerForm.checkValidity()) {
                     alert("Check email to Verify Account by Clicking Link");
                 }
@@ -758,13 +797,120 @@
     <script>
         const userId = {
             {
-                auth() -> check() ? auth() -> id() : 'null'
-            }
+            auth() -> check() ? auth() - > id() : 'null'
+        }
         };
     </script>
 
 
+    <script>
+        let peers = {};
+        const peerConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        const socket = window.Echo.join("studyRoom");
 
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(stream => {
+            document.getElementById("myVideo").srcObject = stream;
+
+            socket.here(users => {
+                users.forEach(user => {
+                    if (user.id !== userId) {
+                        createPeer(user.id, stream);
+                    }
+                });
+            });
+
+            socket.joining(user => {
+                createPeer(user.id, stream);
+            });
+
+            socket.leaving(user => {
+                if (peers[user.id]) {
+                    peers[user.id].close();
+                    document.getElementById(`video-${user.id}`)?.remove();
+                    delete peers[user.id];
+                }
+            });
+
+            window.Echo.channel('studyRoom')
+                .listen('WebRTCSignalEvent', ({ from, data }) => {
+                    if (from === userId) return;
+                    handleSignal(from, data);
+                });
+
+            function createPeer(remoteId, stream) {
+                const peer = new RTCPeerConnection(peerConfig);
+                stream.getTracks().forEach(track => peer.addTrack(track, stream));
+
+                peer.onicecandidate = event => {
+                    if (event.candidate) {
+                        sendSignal(remoteId, { candidate: event.candidate });
+                    }
+                };
+
+                peer.ontrack = event => {
+                    let video = document.createElement('video');
+                    video.srcObject = event.streams[0];
+                    video.autoplay = true;
+                    video.id = `video-${remoteId}`;
+                    video.classList.add('peer-video');
+                    document.getElementById("videoContainer").appendChild(video);
+                };
+
+                peer.onnegotiationneeded = async () => {
+                    const offer = await peer.createOffer();
+                    await peer.setLocalDescription(offer);
+                    sendSignal(remoteId, { sdp: peer.localDescription });
+                };
+
+                peers[remoteId] = peer;
+            }
+
+            function handleSignal(from, data) {
+                const peer = peers[from] || createPeer(from, stream);
+
+                if (data.sdp) {
+                    peer.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(() => {
+                        if (peer.remoteDescription.type === 'offer') {
+                            peer.createAnswer().then(answer => {
+                                peer.setLocalDescription(answer);
+                                sendSignal(from, { sdp: answer });
+                            });
+                        }
+                    });
+                }
+
+                if (data.candidate) {
+                    peer.addIceCandidate(new RTCIceCandidate(data.candidate));
+                }
+            }
+
+            function sendSignal(to, data) {
+                axios.post('/webrtc/signal', { from: userId, to, data });
+            }
+        });
+
+
+    </script>
+
+    <script>
+        document.getElementById("endLiveBtn").addEventListener("click", () => {
+            const modal = new bootstrap.Modal(document.getElementById("finishConfirmModal"));
+            modal.show();
+        });
+
+        window.Echo.join("studyRoom")
+            .here(users => {
+                document.getElementById("userCount").textContent = users.length;
+            })
+            .joining(user => {
+                document.getElementById("userCount").textContent++;
+            })
+            .leaving(user => {
+                document.getElementById("userCount").textContent--;
+            });
+
+
+    </script>
 
 
 </body>

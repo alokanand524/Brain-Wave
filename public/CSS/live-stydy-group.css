@@ -573,3 +573,44 @@ video {
     opacity: 1;
     transform: translateX(-50%) scale(1);
 }
+
+
+
+#liveCard {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 260px;
+    height: 160px;
+    border-radius: 12px;
+    background: #111;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    overflow: hidden;
+    border: 2px solid #00ffd5;
+    cursor: move;
+}
+
+#liveCard video {
+    width: 100%;
+    height: calc(100% - 8px);
+    object-fit: cover;
+    margin-top: -25px;
+}
+
+#cardHeader {
+    height: 30px;
+    /* background: #222; */
+    color: #fff;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 18px;
+    z-index: 1;
+    position: relative;
+}
+
+#cardHeader #closeCard {
+    cursor: pointer;
+}

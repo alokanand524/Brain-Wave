@@ -41,52 +41,47 @@ use Illuminate\Support\Facades\Auth;
 
 
 
-
+// blade #ROUTE
 Route::get('/', [HomeController::class,'index'])->name('index');
 Route::get('/features', [HomeController::class,'features'])->name('features');
 Route::get('/studyRoom', [HomeController::class,'studyRoom'])->name('studyRoom');
+#----------------------------------------------------------------------------------------------------
 
-
-
+// OAuth / Google login #ROUTE
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+#-------------------------------------------------------------------------------------------------------
 
-
-Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-
-
+//gmail link verification #Route
 Route::get('/magic-register/verify/{token}', [AuthController::class, 'verifyMagicRegister'])->name('magic.register.verify');
-
 
 Route::get('/magic-login', function () {
     return view('auth.magic-login');
 })->name('magic.login');
+#----------------------------------------------------------------------------------------------------------
+
+// login / register #ROUTE
+Route::post('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+#------------------------------------------------------------------------------------------------------------
 
 Route::middleware(['auth'])->group(function () {
     // View Profile Page
     Route::get('/profile', [HomeController::class, 'viewProfile'])->name('profile.view');
-
 });
+#------------------------------------------------------------------------------------------------------------
 
-// routes/web.php
+// user details update $Route
 Route::put('/profile/update', [AuthController::class, 'update'])->name('profile.update');
 Route::put('/profile/update-image', [AuthController::class, 'updateImage'])->name('profile.update.image');
+#--------------------------------------------------------------------------------------------------------------
 
-
-Route::middleware(['auth'])->group(function () {
-    Route::post('/live-session/start', [LiveSessionController::class, 'start'])->name('live.session.start');
-    Route::post('/live-session/end', [LiveSessionController::class, 'end'])->name('live.session.end');
-});
-
-
-// Route::post(uri: '/webrtc/offer', [WebRTCController::class, 'offer']);
-// Route::post('/webrtc/answer', [WebRTCController::class, 'answer']);
+//webRTC related $Route
+// Route::post('/webrtc/offer', [WebRTCController::class, 'sendOffer']);
+// Route::post('/webrtc/answer', [WebRTCController::class, 'sendAnswer']);
 // Route::post('/live/start', [LiveSessionController::class, 'start']);
+// Route::post('/live/stop', [LiveSessionController::class, 'stop']);
 
-Route::post('/webrtc/offer', [WebRTCController::class, 'sendOffer']);
-Route::post('/webrtc/answer', [WebRTCController::class, 'sendAnswer']);
-Route::post('/live/start', [LiveSessionController::class, 'start']);
-Route::post('/live/stop', [LiveSessionController::class, 'stop']);
+// Laravel routes
+Route::post('/webrtc/signal', [WebRTCController::class, 'signal'])->middleware('auth');
