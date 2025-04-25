@@ -36,7 +36,7 @@ class GoogleController extends Controller
     
             Auth::login($user);
     
-            return redirect()->route('index');
+            return redirect()->route('studyRoom');
     
         } catch(Exception $e) {
             return response($e->getMessage());
