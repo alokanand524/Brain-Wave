@@ -2,37 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LiveSessionUpdated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\LiveSession;
 
 class LiveSessionController extends Controller
 {
-    public function start(Request $request)
+    public function start()
     {
-        $user = auth()->user();
-
-        // Mark the user as live in DB
         $session = LiveSession::updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'is_live' => true,
-                'joined_at' => now(),
-                'left_at' => null,
-            ]
+            ['user_id' => Auth::id()],
+            ['is_live' => true, 'joined_at' => now()]
         );
 
-        return response()->json(['status' => 'started']);
+        broadcast(new LiveSessionUpdated($session))->toOthers();
+
+        return response()->json(['status' => 'live', 'user' => Auth::user()]);
     }
 
-    public function stop()
+    public function end()
     {
-        $user = auth()->user();
+        $session = LiveSession::where('user_id', Auth::id())->first();
+        if ($session) {
+            $session->update([
+                'is_live' => false,
+                'left_at' => now()
+            ]);
 
-        LiveSession::where('user_id', $user->id)->update([
-            'is_live' => false,
-            'left_at' => now(),
-        ]);
+            broadcast(new LiveSessionUpdated($session))->toOthers();
+        }
 
-        return response()->json(['message' => 'Live stopped']);
+        return response()->json(['status' => 'offline']);
     }
 }

@@ -11,8 +11,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- CSS IMPLEMENTATION -->
-    <!-- @vite(['resources/css/style.css'])
-    @vite(['resources/css/live-stydy-group.css']) -->
 
     <link rel="stylesheet" href="{{ url('CSS/style.css') }}">
     <link rel="stylesheet" href="{{ url('CSS/live-stydy-group.css') }}">
@@ -346,8 +344,16 @@
         </div>
     </div>
 
-    <!-- <div id="myVideo" class="container" style="width: 30%; margin-left:100px; margin-top:-10;"></div> -->
-    <!-- <video id="myVideo" muted autoplay playsinline style="display: none;"></video> -->
+    <!-- <div class="container">
+        <div class="d-flex">
+            <div class="w-2" style="width: 250px; height: 200px; background-color: red; margin-right:10px">otheres live</div>
+            <div class="w-2" style="width: 250px; height: 200px; background-color: red; margin-right:10px">otheres live</div>
+            <div class="w-2" style="width: 250px; height: 200px; background-color: red; margin-right:10px">otheres live</div>
+            <div class="w-2" style="width: 250px; height: 200px; background-color: red; margin-right:10px">otheres live</div>
+        </div>
+    </div> -->
+
+    <!-- card which show users live video -->
     <div id="liveCard" style="display: none;">
         <div id="cardHeader">
             <span id="closeCard">✖</span>
@@ -355,14 +361,8 @@
         <video id="liveVideo" autoplay muted playsinline></video>
     </div>
 
-    <!-- In your HTML body -->
-    <!-- <div id="liveCardsContainer" style="position: relative; z-index: 10;"></div> -->
+    <div id="remoteVideoContainer" style="display: flex; flex-wrap: wrap;"></div>
 
-    <!-- Floating Video Card -->
-    <div id="floatingVideoCard" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #000; border-radius: 12px; overflow: hidden;">
-        <button id="closeVideoCard" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%;">✕</button>
-        <video id="myVideo" autoplay muted playsinline style="width: 300px; height: auto; display: block;"></video>
-    </div>
 
 
 
@@ -375,8 +375,6 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.min.js"></script>
-
-
 
     <script>
         function changePage(dir) {
@@ -579,7 +577,7 @@
     </script>
 
 
-    <!-- <script>
+    <script>
         const joinBtn = document.getElementById('joinLiveBtn');
         const endBtn = document.getElementById('endLiveBtn');
         const videoContainer = document.getElementById('videoContainer');
@@ -646,126 +644,10 @@
 
             await markLiveStatus('end');
         });
-    </script> -->
+    </script>
 
 
-    <!-- <script>
-        let localStream = null;
-
-        document.getElementById("joinLiveBtn").addEventListener("click", async () => {
-            try {
-                // 1. Ask for camera access
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: false
-                });
-
-                // 2. Set video source
-                const video = document.getElementById("liveVideo");
-                video.srcObject = localStream;
-
-                // 3. Show floating card
-                document.getElementById("liveCard").style.display = "block";
-
-                // 4. (Optional) Notify backend you're live
-                await axios.post('/live/start');
-
-            } catch (err) {
-                console.error("Camera permission denied:", err);
-            }
-        });
-
-        function createPeerConnection(remoteId) {
-            const peer = new RTCPeerConnection();
-
-            // Add tracks
-            localStream.getTracks().forEach(track => {
-                peer.addTrack(track, localStream);
-            });
-
-            // Create offer and send it
-            peer.onicecandidate = (event) => {
-                if (event.candidate) {
-                    window.Echo.private(`signal.${remoteId}`).whisper('ice-candidate', {
-                        from: userId,
-                        candidate: event.candidate,
-                    });
-                }
-            };
-
-            peer.ontrack = (event) => {
-                let video = document.getElementById(`video-${remoteId}`);
-                if (!video) {
-                    video = document.createElement('video');
-                    video.id = `video-${remoteId}`;
-                    video.autoplay = true;
-                    video.playsInline = true;
-                    document.getElementById("liveCardsContainer").appendChild(video);
-                }
-                video.srcObject = event.streams[0];
-            };
-
-            peers[remoteId] = peer;
-
-            peer.createOffer().then(offer => {
-                peer.setLocalDescription(offer);
-                axios.post('/webrtc/offer', {
-                    to: remoteId,
-                    from: userId,
-                    offer
-                });
-            });
-        }
-
-        peer.onicecandidate = (e) => {
-            socket.emit('ice-candidate', e.candidate);
-        };
-
-        socket.on('receive-offer', async (offer) => {
-            await peer.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await peer.createAnswer();
-            await peer.setLocalDescription(answer);
-            socket.emit('send-answer', answer);
-        });
-
-        peer.ontrack = (event) => {
-            const remoteStream = event.streams[0];
-            document.querySelector('#remoteVideo').srcObject = remoteStream;
-        };
-
-
-
-        const video = document.getElementById('myVideo');
-
-        navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: false
-            })
-            .then(stream => {
-                video.srcObject = stream;
-
-                video.addEventListener('loadedmetadata', async () => {
-                    try {
-                        await video.play();
-
-                        // Show PiP window
-                        if (document.pictureInPictureEnabled) {
-                            await video.requestPictureInPicture();
-                        } else {
-                            console.warn("Picture-in-Picture not supported.");
-                        }
-                    } catch (err) {
-                        console.error("Failed to start PiP:", err);
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('Camera access error:', error);
-            });
-    </script> -->
-
-
-    <!-- <script>
+    <script>
         let localStream = null;
 
         document.getElementById("joinLiveBtn").addEventListener("click", async () => {
@@ -871,263 +753,19 @@
                 card.style.transition = "all 0.1s ease";
             });
         })();
-    </script> -->
+    </script>
 
-    <!-- <script>
+    <script>
         const userId = {
             {
-                auth() - > check() ? auth() - > id() : 'null'
+                auth() -> check() ? auth() -> id() : 'null'
             }
         };
-    </script> -->
-
-
-    <script>
-        let localStream = null;
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const joinBtn = document.getElementById("joinLiveBtn");
-            const closeBtn = document.getElementById("closeVideoCard");
-            const video = document.getElementById("myVideo");
-            const card = document.getElementById("floatingVideoCard");
-
-            joinBtn.addEventListener("click", async () => {
-                console.log("Join button clicked");
-
-                try {
-                    localStream = await navigator.mediaDevices.getUserMedia({
-                        video: true,
-                        audio: false
-                    });
-                    video.srcObject = localStream;
-                    await video.play();
-                    card.style.display = "block";
-                    console.log("Camera started and video playing");
-                } catch (err) {
-                    console.error("Camera error:", err);
-                    alert("Camera not accessible: " + err.message);
-                }
-            });
-
-            closeBtn.addEventListener("click", () => {
-                if (localStream) {
-                    localStream.getTracks().forEach(track => track.stop());
-                }
-                card.style.display = "none";
-                console.log("Video stopped and card hidden");
-            });
-        });
-
-
-        function showFloatingCard(stream) {
-            const card = document.createElement("div");
-            card.id = "my-floating-card";
-            card.style = `
-        position: fixed; bottom: 80px; right: 20px; width: 200px; height: 120px;
-        background: #000; border-radius: 10px; overflow: hidden; z-index: 9999;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3); cursor: move;
-    `;
-
-            const video = document.createElement("video");
-            video.srcObject = stream;
-            video.autoplay = true;
-            video.muted = true;
-            video.style = "width: 100%; height: 100%; object-fit: cover;";
-            card.appendChild(video);
-
-            const close = document.createElement("button");
-            close.innerHTML = "&times;";
-            close.style = `
-        position: absolute; top: 5px; right: 5px; background: red; color: white;
-        border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer;
-    `;
-            close.onclick = () => {
-                card.remove();
-                stopStream(localStream);
-                axios.post('/live/stop');
-            };
-
-            card.appendChild(close);
-            document.body.appendChild(card);
-
-            // Make draggable
-            dragElement(card);
-        }
-
-        function stopStream(stream) {
-            stream.getTracks().forEach(track => track.stop());
-        }
-
-        // Drag logic
-        function dragElement(elmnt) {
-            let pos1 = 0,
-                pos2 = 0,
-                pos3 = 0,
-                pos4 = 0;
-            elmnt.onmousedown = dragMouseDown;
-
-            function dragMouseDown(e) {
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-            }
-
-            function elementDrag(e) {
-                e.preventDefault();
-
-                const secNav = document.getElementById('sec-nav');
-                const secNavHeight = secNav ? secNav.offsetHeight : 0;
-                const footerHeight = 100; // Custom footer height if needed
-
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-
-                let top = elmnt.offsetTop - pos2;
-                let left = elmnt.offsetLeft - pos1;
-
-                top = Math.max(secNavHeight + 10, Math.min(window.innerHeight - footerHeight - elmnt.offsetHeight, top));
-                left = Math.max(10, Math.min(window.innerWidth - elmnt.offsetWidth, left));
-
-                elmnt.style.top = `${top}px`;
-                elmnt.style.left = `${left}px`;
-            }
-
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-            }
-        }
     </script>
 
 
-    <script>
-        function setupEchoAndPeers() {
-            window.Echo.join('live-room')
-                .here((users) => {
-                    users.forEach(u => {
-                        if (u.id !== userId) {
-                            connectToUser(u.id);
-                        }
-                    });
-                })
-                .joining((user) => {
-                    if (user.id !== userId) {
-                        connectToUser(user.id);
-                    }
-                })
-                .leaving((user) => {
-                    if (peers[user.id]) {
-                        peers[user.id].close();
-                        delete peers[user.id];
-                        document.getElementById(`video-${user.id}`)?.remove();
-                    }
-                });
 
-            window.Echo.private(`signal.${userId}`)
-                .listen('ReceiveAnswer', async ({
-                    from,
-                    answer
-                }) => {
-                    const peer = peers[from];
-                    if (peer) {
-                        await peer.setRemoteDescription(new RTCSessionDescription(answer));
-                    }
-                })
-                .listenForWhisper('ice-candidate', async ({
-                    from,
-                    candidate
-                }) => {
-                    if (peers[from]) {
-                        await peers[from].addIceCandidate(new RTCIceCandidate(candidate));
-                    }
-                })
-                .listen('ReceiveOffer', async ({
-                    from,
-                    offer
-                }) => {
-                    const peer = new RTCPeerConnection();
-                    localStream.getTracks().forEach(track => peer.addTrack(track, localStream));
 
-                    peer.onicecandidate = (e) => {
-                        if (e.candidate) {
-                            window.Echo.private(`signal.${from}`).whisper('ice-candidate', {
-                                from: userId,
-                                candidate: e.candidate
-                            });
-                        }
-                    };
-
-                    peer.ontrack = (e) => {
-                        showRemoteUserVideo(from, e.streams[0]);
-                    };
-
-                    await peer.setRemoteDescription(new RTCSessionDescription(offer));
-                    const answer = await peer.createAnswer();
-                    await peer.setLocalDescription(answer);
-
-                    await axios.post("/webrtc/answer", {
-                        to: from,
-                        from: userId,
-                        answer: peer.localDescription
-                    });
-
-                    peers[from] = peer;
-                });
-        }
-
-        function connectToUser(remoteId) {
-            const peer = new RTCPeerConnection();
-            localStream.getTracks().forEach(track => peer.addTrack(track, localStream));
-
-            peer.onicecandidate = (e) => {
-                if (e.candidate) {
-                    window.Echo.private(`signal.${remoteId}`).whisper('ice-candidate', {
-                        from: userId,
-                        candidate: e.candidate
-                    });
-                }
-            };
-
-            peer.ontrack = (e) => {
-                showRemoteUserVideo(remoteId, e.streams[0]);
-            };
-
-            peers[remoteId] = peer;
-
-            peer.createOffer().then(offer => {
-                peer.setLocalDescription(offer);
-                axios.post("/webrtc/offer", {
-                    to: remoteId,
-                    from: userId,
-                    offer
-                });
-            });
-        }
-
-        function showRemoteUserVideo(id, stream) {
-            if (document.getElementById(`video-${id}`)) return;
-
-            const card = document.createElement("div");
-            card.id = `video-${id}`;
-            card.style = `
-        width: 200px; height: 120px; margin: 10px; border-radius: 10px;
-        overflow: hidden; background: #222;
-    `;
-
-            const video = document.createElement("video");
-            video.srcObject = stream;
-            video.autoplay = true;
-            video.playsInline = true;
-            video.style = "width: 100%; height: 100%; object-fit: cover;";
-            card.appendChild(video);
-
-            container.appendChild(card);
-        }
-    </script>
 
 </body>
 
