@@ -21,15 +21,21 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 260px;
-            height: 160px;
-            border-radius: 12px;
-            background: #111;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            width: 280px;
+            height: 180px;
+            border-radius: 15px;
+            background: #000;
+            box-shadow: 0 8px 32px rgba(0, 255, 213, 0.3);
             z-index: 9999;
             overflow: hidden;
-            border: 2px solid #00ffd5;
+            border: 3px solid #00ffd5;
             cursor: move;
+            transition: all 0.3s ease;
+        }
+        
+        #liveCard:hover {
+            box-shadow: 0 12px 40px rgba(0, 255, 213, 0.5);
+            transform: scale(1.02);
         }
 
         #liveCard video {
@@ -54,6 +60,60 @@
 
         #cardHeader #closeCard {
             cursor: pointer;
+        }
+
+        .study-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-top: 100px;
+        }
+
+        .study-card {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #333;
+            color: white;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #28a745;
+            margin-left: auto;
+        }
+
+        .video-placeholder {
+            height: 150px;
+            background: #222;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .video-placeholder i {
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
     </style>
 
@@ -217,33 +277,14 @@
 
                 @if(Auth::check())
                     <button id="joinLiveBtn" class="btn btn-primary">Join Live Room</button>
+                    <button id="endLiveBtn" class="btn btn-danger" style="display: none;">End Now</button>
                 @else
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#authModal">Login to Join
                         Live</button>
                 @endif
 
-                <button id="confirmEndBtn" type="button" class="btn btn-danger" data-bs-toggle="modal"
-                    data-bs-target="#finishConfirmModal">End Now</button>
 
 
-                <!-- Confirmation Modal -->
-                <div class="modal fade" id="finishConfirmModal" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content bg-dark text-white">
-                            <div class="modal-header">
-                                <h5 class="modal-title">End Live Session?</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                Are you sure you want to end the session and go offline?
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button id="confirmEndBtn" class="btn btn-danger">End Session</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
 
 
@@ -412,17 +453,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.min.js"></script>
+    <script src="{{ asset('js/webrtc.js') }}"></script>
 
     <script>
         function changePage(dir) {
-            const maxPage = Math.ceil(totalUsers / cardsPerPage);
-            currentPage += dir;
-            if (currentPage < 1) currentPage = 1;
-            if (currentPage > maxPage) currentPage = maxPage;
-            loadStudyCards(currentPage);
-            document.getElementById("page-info").textContent = `${currentPage} / ${maxPage}`;
+            // Pagination handled by WebRTC script
+            console.log('Page change requested:', dir);
         }
 
         function startCamera(id) {
@@ -451,11 +487,9 @@
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            const joinBtn = document.getElementById('joinLiveBtn');
             const theme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', theme);
             document.getElementById('theme-icon').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-sun';
-            loadStudyCards(currentPage);
         });
     </script>
 
@@ -616,157 +650,29 @@
     </script>
 
 
+
+
+
+    <!-- Draggable Card Script -->
     <script>
-        const joinBtn = document.getElementById('joinLiveBtn');
-        const endBtn = document.getElementById('endLiveBtn');
-        const videoContainer = document.getElementById('videoContainer');
-        let stream;
+        // Make the floating card draggable
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.getElementById('liveCard');
+            const header = document.getElementById('cardHeader');
+            const nav = document.getElementById('sec-nav');
+            
+            let isDragging = false;
+            let offsetX, offsetY;
 
-        async function markLiveStatus(status) {
-            const endpoint = status === 'start' ? '/live-session/start' : '/live-session/end';
-
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-                console.log('Server response:', result);
-            } catch (err) {
-                console.error('Error updating live status:', err);
-            }
-        }
-
-        joinBtn?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log("Join button clicked");
-
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: false
-                });
-
-                const video = document.createElement('video');
-                video.srcObject = stream;
-                video.autoplay = true;
-                video.muted = true;
-                video.classList.add('rounded', 'shadow', 'border');
-                video.style.width = "60%";
-
-                videoContainer.innerHTML = '';
-                videoContainer.appendChild(video);
-
-                joinBtn.classList.add('d-none');
-                endBtn.classList.remove('d-none');
-
-                await markLiveStatus('start');
-            } catch (error) {
-                alert("Camera permission required to go live.");
-                console.error(error);
-            }
-        });
-
-        document.getElementById('confirmEndBtn')?.addEventListener('click', async () => {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                videoContainer.innerHTML = '';
-            }
-
-            joinBtn.classList.remove('d-none');
-            endBtn.classList.add('d-none');
-
-            await markLiveStatus('end');
-        });
-    </script>
-
-
-    <script>
-        let localStream = null;
-
-        document.getElementById("joinLiveBtn").addEventListener("click", async () => {
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: false
-                });
-
-                const video = document.getElementById("liveVideo");
-                video.srcObject = localStream;
-
-                document.getElementById("liveCard").style.display = "block";
-
-                // (Optional) Notify backend you're live
-                await axios.post('/live/start');
-
-            } catch (err) {
-                console.error("Camera permission denied:", err);
-            }
-        });
-
-        // Close icon functionality
-        document.getElementById("closeCard").addEventListener("click", () => {
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-            }
-            document.getElementById("liveCard").style.display = "none";
-        });
-
-        // Make the card draggable
-        (function makeDraggable() {
-            const card = document.getElementById("liveCard");
-            const header = document.getElementById("cardHeader");
-            let isDragging = false,
-                offsetX, offsetY;
-
-            header.addEventListener("mousedown", (e) => {
+            header.addEventListener('mousedown', (e) => {
                 isDragging = true;
                 offsetX = e.clientX - card.offsetLeft;
                 offsetY = e.clientY - card.offsetTop;
-                card.style.transition = "none";
+                card.style.transition = 'none';
             });
 
-            document.addEventListener("mousemove", (e) => {
+            document.addEventListener('mousemove', (e) => {
                 if (isDragging) {
-                    card.style.left = `${e.clientX - offsetX}px`;
-                    card.style.top = `${e.clientY - offsetY}px`;
-                    card.style.bottom = "auto";
-                    card.style.right = "auto";
-                }
-            });
-
-            document.addEventListener("mouseup", () => {
-                isDragging = false;
-                card.style.transition = "all 0.1s ease";
-            });
-        })();
-
-
-        // to restrict the card to hide
-
-        (function makeDraggable() {
-            const card = document.getElementById("liveCard");
-            const header = document.getElementById("cardHeader");
-            const nav = document.getElementById("sec-nav");
-
-            let isDragging = false,
-                offsetX, offsetY;
-
-            header.addEventListener("mousedown", (e) => {
-                isDragging = true;
-                offsetX = e.clientX - card.offsetLeft;
-                offsetY = e.clientY - card.offsetTop;
-                card.style.transition = "none";
-            });
-
-            document.addEventListener("mousemove", (e) => {
-                if (isDragging) {
-                    // Get nav height to restrict top
                     const navBottom = nav.offsetTop + nav.offsetHeight;
                     const windowWidth = window.innerWidth;
                     const windowHeight = window.innerHeight;
@@ -776,30 +682,26 @@
                     let newLeft = e.clientX - offsetX;
                     let newTop = e.clientY - offsetY;
 
-                    // Restrict to screen bounds
+                    // Keep card within screen bounds
                     newLeft = Math.max(0, Math.min(newLeft, windowWidth - cardWidth));
                     newTop = Math.max(navBottom, Math.min(newTop, windowHeight - cardHeight));
 
-                    card.style.left = `${newLeft}px`;
-                    card.style.top = `${newTop}px`;
-                    card.style.bottom = "auto";
-                    card.style.right = "auto";
+                    card.style.left = newLeft + 'px';
+                    card.style.top = newTop + 'px';
+                    card.style.bottom = 'auto';
+                    card.style.right = 'auto';
                 }
             });
 
-            document.addEventListener("mouseup", () => {
+            document.addEventListener('mouseup', () => {
                 isDragging = false;
-                card.style.transition = "all 0.1s ease";
+                card.style.transition = 'all 0.3s ease';
             });
-        })();
+        });
     </script>
 
     <script>
-        const userId = {
-            {
-            auth() -> check() ? auth() - > id() : 'null'
-        }
-        };
+        const userId = @auth {{ auth()->id() }} @else null @endauth;
     </script>
 
 

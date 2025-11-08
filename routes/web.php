@@ -43,6 +43,14 @@ use Illuminate\Support\Facades\Auth;
 
 // blade #ROUTE
 Route::get('/', [HomeController::class,'index'])->name('index');
+Route::get('/debug', function() {
+    return response()->json([
+        'app_name' => config('app.name'),
+        'app_url' => config('app.url'),
+        'env' => config('app.env'),
+        'message' => 'Brain-Wave is running locally!'
+    ]);
+});
 Route::get('/features', [HomeController::class,'features'])->name('features');
 Route::get('/studyRoom', [HomeController::class,'studyRoom'])->name('studyRoom');
 #----------------------------------------------------------------------------------------------------
@@ -75,5 +83,15 @@ Route::middleware(['auth'])->group(function () {
 // user details update $Route
 Route::put('/profile/update', [AuthController::class, 'update'])->name('profile.update');
 Route::put('/profile/update-image', [AuthController::class, 'updateImage'])->name('profile.update.image');
+#--------------------------------------------------------------------------------------------------------------
+
+// WebRTC Live Sessions #ROUTE
+Route::middleware(['auth'])->group(function () {
+    Route::post('/live-session/start', [WebRTCController::class, 'startSession']);
+    Route::post('/live-session/end', [WebRTCController::class, 'endSession']);
+});
+
+// Public route - no auth required to see live users
+Route::get('/live-sessions', [WebRTCController::class, 'getLiveSessions']);
 #--------------------------------------------------------------------------------------------------------------
 

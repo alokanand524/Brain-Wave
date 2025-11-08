@@ -82,10 +82,26 @@ class AuthController extends Controller
         $user->save();
 
         // Send email
-        Mail::html("<p>Click the link to complete your registration: <a href='$link'>$link</a></p>", function ($message) use ($request) {
-            $message->to($request->email)
-                ->subject('Complete Your BrainWave Registration');
-        });
+        try {
+            Mail::html(
+                "<div style='font-family: Arial, sans-serif; padding: 20px;'>
+                    <h2>Welcome to BrainWave! 🧠</h2>
+                    <p>Thank you for registering. Please click the link below to complete your registration:</p>
+                    <a href='$link' style='background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Complete Registration</a>
+                    <p><small>This link expires in 15 minutes.</small></p>
+                </div>", 
+                function ($message) use ($request) {
+                    $message->to($request->email)
+                        ->subject('Complete Your BrainWave Registration 🎓');
+                }
+            );
+            
+            \Log::info('Registration email sent to: ' . $request->email);
+            
+        } catch (\Exception $e) {
+            \Log::error('Failed to send registration email: ' . $e->getMessage());
+            return back()->withErrors(['email' => 'Failed to send verification email. Please try again.']);
+        }
 
         return redirect('/studyRoom');
     }
